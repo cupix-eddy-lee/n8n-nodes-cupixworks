@@ -13,8 +13,47 @@ export class CupixWorksApi implements ICredentialType {
 	icon: Icon = 'file:cupixworks.svg';
 	properties: INodeProperties[] = [
 		{
+			displayName: 'domain',
+			name: 'domain',
+			type: 'options',
+			default: 'cupix.works',
+			required: true,
+			options: [
+				{
+					name: 'cupix.works',
+					value: 'cupix.works',
+					description: 'US Region'
+				},
+				{
+					name: 'cupix-eu.works',
+					value: 'cupix-eu.works',
+					description: 'Europe Region'
+				},
+				{
+					name: 'cupix-au.works',
+					value: 'cupix-au.works',
+					description: 'Australia Region'
+				},
+				{
+					name: 'cupix-jp.works',
+					value: 'cupix-jp.works',
+					description: 'Japan Region'
+				},
+				{
+					name: 'cupix-sg.works',
+					value: 'cupix-sg.works',
+					description: 'Singapore Region'
+				},
+				{
+					name: 'cupix-ca.works',
+					value: 'cupix-ca.works',
+					description: 'Canada Region'
+				}
+			]
+		},
+		{
 			displayName: 'API Token',
-			description: 'Go to the <a href="https://app.cupix.works/setting/personal target="_blank"">[Personal Page]</a> to find your API Key.',
+			description: 'Visit https://app.[your domain]/settings/api to create a new token. (e.g., https://app.cupix-eu.works/settings/api)',
 			name: 'api_token',
 			type: 'string',
 			default: '',
@@ -32,8 +71,8 @@ export class CupixWorksApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				'X-Cupix-Auth': '={{$credentials.api_token}}',
-			},
+				'x-cupix-auth': '={{$credentials.api_token}}',
+			}
 		},
 	};
 
@@ -41,8 +80,8 @@ export class CupixWorksApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			method: 'GET',
-			baseURL: 'https://api.cupix.works/api/v1',
-			url: '/me',
+			baseURL: '={{"https://api." + $credentials.domain + "/api/v1"}}',
+			url: '/me?fields=id'
 		},
 	};
 }
