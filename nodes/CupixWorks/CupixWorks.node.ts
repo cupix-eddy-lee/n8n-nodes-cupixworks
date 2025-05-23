@@ -3,16 +3,20 @@ import type {
 	INodeTypeDescription,
 } from 'n8n-workflow';
 import { NodeConnectionType } from 'n8n-workflow';
+
+/* to use actions with openapi
 import { N8NPropertiesBuilder, N8NPropertiesBuilderConfig } from '@devlikeapro/n8n-openapi-node';
 import * as doc from './openapi.json';
 
 const config: N8NPropertiesBuilderConfig = {};
 const parser = new N8NPropertiesBuilder(doc, config);
 const properties = parser.build();
+*/
 
 export class CupixWorks implements INodeType {
 	description: INodeTypeDescription = {
-		name: 'cupixWorks',
+		// name: 'cupixWorks', // to use actions with openapi
+		name: 'cupixWorksTrigger',
 		displayName: 'CupixWorks',
 		icon: 'file:cupixworks.svg',
 		group: ['tools'],
@@ -30,6 +34,14 @@ export class CupixWorks implements INodeType {
 				required: true,
 			}
 		],
-		properties
+		// properties // to use actions with openapi
+		properties: [
+			{
+				displayName: 'information',
+				name: 'information',
+				type: 'string',
+				default: 'no actions available yet'
+			}
+		]
 	};
 }
