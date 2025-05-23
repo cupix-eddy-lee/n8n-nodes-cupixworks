@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-base.cupixWorksTrigger",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["CupixWorks"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/cupixrnd/cupix-api"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/cupixrnd/cupix-api"
+			}
+		]
+	}
+}

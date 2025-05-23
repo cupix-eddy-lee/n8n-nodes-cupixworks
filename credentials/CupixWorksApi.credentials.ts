@@ -1,30 +1,27 @@
 import {
 	IAuthenticateGeneric,
+	Icon,
 	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
 } from 'n8n-workflow';
 
-export class HttpBinApi implements ICredentialType {
-	name = 'httpbinApi';
-	displayName = 'HttpBin API';
-	documentationUrl = '<your-docs-url>';
+export class CupixWorksApi implements ICredentialType {
+	name = 'cupixWorksApi';
+	displayName = 'CupixWorks API';
+	documentationUrl = "https://github.com/cupixrnd/cupix-api";
+	icon: Icon = 'file:cupixworks.svg';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'Token',
-			name: 'token',
+			displayName: 'API Token',
+			description: 'Go to the <a href="https://app.cupix.works/setting/personal target="_blank"">[Personal Page]</a> to find your API Key.',
+			name: 'api_token',
 			type: 'string',
 			default: '',
 			typeOptions: {
 				password: true,
 			}
-		},
-		{
-			displayName: 'Domain',
-			name: 'domain',
-			type: 'string',
-			default: 'https://httpbin.org',
-		},
+		}
 	];
 
 	// This allows the credential to be used by other parts of n8n
@@ -35,7 +32,7 @@ export class HttpBinApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '={{"Bearer " + $credentials.token}}',
+				'X-Cupix-Auth': '={{$credentials.api_token}}',
 			},
 		},
 	};
@@ -43,8 +40,9 @@ export class HttpBinApi implements ICredentialType {
 	// The block below tells how this credential can be tested
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: '={{$credentials?.domain}}',
-			url: '/bearer',
+			method: 'GET',
+			baseURL: 'https://api.cupix.works/api/v1',
+			url: '/me',
 		},
 	};
 }
