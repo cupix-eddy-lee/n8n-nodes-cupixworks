@@ -164,18 +164,17 @@ export class CupixWorksTrigger implements INodeType {
 					this,
 					'GET',
 					'facilities',
-					{ fields: 'id,name,key'},
-					'http://localhost:3000/api/v1/'
+					{ fields: 'id,name,key'}
 				);
 
-				const facilities: FacilityItem[] = responses.result.data;
+				const facilities: FacilityItem[] = responses.result?.data;
 
 				if (!facilities) {
 					return [];
 				}
 
 				return facilities.map((value) => ({
-					name: value.attributes.name!,
+					name: value.attributes.name! + ` (${value.attributes.key!})`,
 					value: value.attributes.key!,
 				}));
 			}
@@ -194,10 +193,11 @@ export class CupixWorksTrigger implements INodeType {
 				const webhookData = this.getWorkflowStaticData('node');
 				const hookUrl = this.getNodeWebhookUrl('default');
 				const events = this.getNodeParameter('events');
+				const credentials = await this.getCredentials('cupixWorksApi');
 				const capitalize = (str: string) => {
 					return str.charAt(0).toUpperCase() + str.slice(1);
 				};
-				
+
 				if (!events) throw new Error('No events specified');
 
 				const facilityKey = events.toString().startsWith('facility') ? undefined : this.getNodeParameter('facility_key');
@@ -212,21 +212,23 @@ export class CupixWorksTrigger implements INodeType {
 				const response = await apiRequest.call(
 					this,
 					'POST',
-					'recipes',
+					'recipes/v2',
 					{
 						name: events.toString(),
 						kind: 'user_recipe',
 						eventable_type: capitalize(triggerModel),
 						trigger_action: triggerAction,
 						trigger_reason: triggerReason,
-						event_action_name: 'zapier',
+						event_action_name: 'n8n',
 						facility_key: facilityKey,
 						hook_url: hookUrl,
-						version: this.getNode().typeVersion.toString()
+						version: this.getNode().typeVersion.toString(),
+						fields: 'id'
 					},
-					undefined
+					`https://api.${credentials.domain}/api`,
 				);
 
+				console.log(`[${new Date()}] Create Recipe - response: ${JSON.stringify(response)}`);
 				if (response.result.data.id === undefined) {
 					return false;
 				}
@@ -236,17 +238,19 @@ export class CupixWorksTrigger implements INodeType {
 				return true;
 			},
 			async delete(this: IHookFunctions): Promise<boolean> {
+				const credentials = await this.getCredentials('cupixWorksApi');
 				const webhookData = this.getWorkflowStaticData('node');
 				if (!webhookData.webhookId) return false;
 
-				await apiRequest.call(
+				const response = await apiRequest.call(
 					this,
 					'DELETE',
-					`recipes/${webhookData.webhookId}`,
+					`recipes/v2/${webhookData.webhookId}`,
 					undefined,
-					undefined
+					`https://api.${credentials.domain}/api`,
 				);
 
+				console.log(`[${new Date()}] Delete Recipe - response: ${JSON.stringify(response)}`);
 				return true;
 			}
 		}

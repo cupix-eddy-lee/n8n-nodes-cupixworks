@@ -21,10 +21,18 @@ export async function apiRequest(
 ): Promise<any> {
 	const credentials = await this.getCredentials('cupixWorksApi');
 
-	baseUri = baseUri || 'https://api.cupix.works/api/v1';
+	baseUri = baseUri || `https://api.${credentials.domain}/api/v1`;
+
+	if (method === 'GET') {
+		query = { ...query, ...body };
+		body = {};
+	}
 
 	const options: IRequestOptions = {
-		headers: { 'x-cupix-auth': credentials.api_token },
+		headers: {
+			'x-cupix-auth': credentials.api_token,
+			'Content-Type': 'application/json'
+		},
 		method,
 		uri: `${baseUri}/${endpoint}`,
 		body,
@@ -37,6 +45,7 @@ export async function apiRequest(
 	}
 
 	if (body && Object.keys(body).length === 0) {
+		delete options.headers?.['Content-Type'];
 		delete options.body;
 	}
 
@@ -45,6 +54,7 @@ export async function apiRequest(
 	}
 
 	try {
+		console.log(`[${new Date()}] Request CupixWorks API - options: ${JSON.stringify(options)}`);
 		return await this.helpers.request(options);
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error as JsonObject);
