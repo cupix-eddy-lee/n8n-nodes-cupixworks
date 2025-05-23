@@ -24,7 +24,7 @@ export async function apiRequest(
 	baseUri = baseUri || 'https://api.cupix.works/api/v1';
 
 	const options: IRequestOptions = {
-		headers: { 'X-Cupix-Auth': credentials.api_token },
+		headers: { 'x-cupix-auth': credentials.api_token },
 		method,
 		uri: `${baseUri}/${endpoint}`,
 		body,
